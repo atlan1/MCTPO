@@ -22,8 +22,9 @@ public class DecayPhysics extends AbstractBlockPhysics {
 	}
 	
 	public boolean decay(Block b){
+		addId(b);
 		if(b!=null){
-			if(b.framesSinceUpdate>=tick){
+			if(b.framesSinceUpdate.get(getId(b))>=tick){
 				Material m = b.material;
 				boolean willDecay = false;
 				if((new Random()).nextInt(100)<prob){
@@ -76,7 +77,7 @@ public class DecayPhysics extends AbstractBlockPhysics {
 				if(willDecay)
 					b.material = Material.AIR;
 				else
-					b.update();
+					b.update(getId(b));
 			}
 		}
 		return true;

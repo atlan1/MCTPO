@@ -93,12 +93,6 @@ public class MCTPO extends Applet implements Runnable{
 	}
 	
 	public void render() {
-//		if(!(frame.getSize().width==this.getSize().width&&frame.getSize().height==this.getSize().height)){
-//			this.setSize(frame.getSize());
-//			this.setPreferredSize(frame.getSize());
-//		}
-		
-		
 		Graphics g = screen.getGraphics();
 		sky.render(g);
 		

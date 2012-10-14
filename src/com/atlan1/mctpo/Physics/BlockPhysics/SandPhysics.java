@@ -5,7 +5,7 @@ import com.atlan1.mctpo.Thing;
 
 public class SandPhysics implements BlockPhysics {
 
-	private AbstractBlockPhysics abs ;
+	private AbstractBlockPhysics abs;
 	
 	public SandPhysics() {
 		abs = new FallPhysics(10);

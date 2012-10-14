@@ -21,7 +21,6 @@ public class World {
 	public Point spawnPoint = new Point();
 	
 	public static Block[][] blocks = new Block[worldW][worldH];
-	public static Block[][] renderedBlocks = new Block[worldW][worldH]; // null check!!
 	
 	public World(Character c){
 		character = c;
@@ -30,14 +29,13 @@ public class World {
 				blocks[x][y] = new Block(new Rectangle(x * MCTPO.tileSize, y * MCTPO.tileSize, MCTPO.tileSize, MCTPO.tileSize), Material.AIR);
 			}
 		}
-		renderedBlocks = blocks;
 		generateLevel();
 		setPlayerSpawn();
 	}
 	
 	private void setPlayerSpawn(){
 		Random r = new Random();
-		int rW  = r.nextInt(worldW-worldW+1);
+		int rW  = r.nextInt(worldW-1);
 		for(int y = 0; y<blocks[0].length;y++){
 			try{
 				if(blocks[rW][y].material==Material.AIR&&blocks[rW][y-1].material==Material.AIR&&!(blocks[rW][y+1].material==Material.AIR)){
@@ -70,12 +68,10 @@ public class World {
 	}
 	
 	public void render(Graphics g, int camX, int camY, int renW, int renH){
-		Block[][] renBlocks = new Block[worldW][worldH];
 		for(int x=(camX/MCTPO.tileSize);x<(camX/MCTPO.tileSize) + renW;x++){
 			for(int y=(camY/MCTPO.tileSize);y<(camY/MCTPO.tileSize) + renH;y++){
 				if(x>=0 && y>=0 && x<worldW && y<worldH){
 					blocks[x][y].render(g);
-					renBlocks[x][y] = blocks[x][y];
 					if(blocks[x][y].contains(new Point(MCTPO.mouse.x + (int)MCTPO.sX, MCTPO.mouse.y + (int)MCTPO.sY))&&character.isBlockInBuildRange(blocks[x][y])){
 						g.setColor(new Color(0, 0, 0));
 						g.drawRect(blocks[x][y].x-camX, blocks[x][y].y-camY, blocks[x][y].width-1, blocks[x][y].height-1);
@@ -83,7 +79,6 @@ public class World {
 				}
 			}
 		}
-		renderedBlocks = renBlocks;
 	}
 
 	public void tick(int camX, int camY, int renW, int renH) {

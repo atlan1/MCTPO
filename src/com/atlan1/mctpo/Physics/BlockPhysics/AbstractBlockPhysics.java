@@ -1,10 +1,15 @@
 package com.atlan1.mctpo.Physics.BlockPhysics;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.atlan1.mctpo.Block;
 import com.atlan1.mctpo.Thing;
 
 public class AbstractBlockPhysics {
 
+	private Map<Block, Integer> blockID = new HashMap<Block, Integer>();
+	
 	public boolean performPhysics(Block b){
 		return false;
 	}
@@ -13,4 +18,18 @@ public class AbstractBlockPhysics {
 		return false;
 	}
 	
+	protected void addId(Block b){
+		if(blockID.keySet().contains(b)){
+			return;
+		}else{
+			blockID.put(b, b.requestFramesId());
+		}
+	}
+	
+	protected int getId(Block b){
+		if(blockID.keySet().contains(b)){
+			return blockID.get(b);
+		}
+		return 0;
+	}
 }

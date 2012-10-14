@@ -15,8 +15,11 @@ public class DamageCollision extends AbstractBlockPhysics{
 	}
 
 	public boolean damage(Block b, Thing t){
-		if(t instanceof LivingThing&&b.framesSinceUpdate<=tick)
+		addId(b);
+		if(t instanceof LivingThing&&b.framesSinceUpdate.get(getId(b))<=tick){
 			((LivingThing)t).setHealth(((LivingThing)t).getHealth() - damage);
+			b.update(getId(b));
+		}
 		return true;
 	}
 	

@@ -13,14 +13,15 @@ public class FallPhysics extends AbstractBlockPhysics {
 	}
 
 	public boolean fall(Block b){
+		addId(b);
 		if(b!=null){
-			if(b.framesSinceUpdate>=tick){
+			if(b.framesSinceUpdate.get(getId(b))>=tick){
 				Material m = b.material;
 				try{
 					if(World.blocks[b.getGridX()][b.getGridY()+1].material.nonSolid && World.blocks[b.getGridX()][b.getGridY()+1].material != m){
 						World.blocks[b.getGridX()][b.getGridY()+1].material = m;
 						b.material = Material.AIR;
-						World.blocks[b.getGridX()][b.getGridY()+1].update();
+						World.blocks[b.getGridX()][b.getGridY()+1].update(getId(b));
 					}
 				}catch(Throwable t){}
 			}

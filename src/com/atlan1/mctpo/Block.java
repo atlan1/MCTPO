@@ -10,7 +10,7 @@ public class Block extends Rectangle implements Thing{
 	
 	public Material material = Material.AIR;
 
-	public int framesSinceUpdate = 0;
+	public List<Integer> framesSinceUpdate = new ArrayList<Integer>();
 	public List<Thing> collisions = new ArrayList<Thing>();
 	
 	public Block(Rectangle size, int id) {
@@ -29,8 +29,8 @@ public class Block extends Rectangle implements Thing{
 		}
 	}
 	
-	public void update() {
-		framesSinceUpdate = 0;
+	public void update(int index) {
+		framesSinceUpdate.set(index, 0);
 	}
 
 	public void tick(){
@@ -39,7 +39,9 @@ public class Block extends Rectangle implements Thing{
 			for(Thing t : new ArrayList<Thing>(collisions)){
 				material.collide(this, t);
 			}
-			framesSinceUpdate++;
+			for(int i=0;i<framesSinceUpdate.size();i++){
+				framesSinceUpdate.set(i, framesSinceUpdate.get(i)+1);
+			}
 		}
 			
 	}
@@ -52,6 +54,11 @@ public class Block extends Rectangle implements Thing{
 	public Block removeCollision(Thing ent) {
 		this.collisions.remove(ent);
 		return this;
+	}
+	
+	public synchronized int requestFramesId(){
+		framesSinceUpdate.add(0);
+		return framesSinceUpdate.get(framesSinceUpdate.size()-1);
 	}
 	
 	public int getGridX(){

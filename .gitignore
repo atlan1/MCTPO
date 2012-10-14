@@ -1,7 +1,7 @@
-/bin
-/.settings
-/web
+bin
+.settings
+web
 
-/.classpath
-/.project
-/out
+.classpath
+.project
+out
