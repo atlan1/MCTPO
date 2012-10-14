@@ -1,7 +1,6 @@
 bin
-.settings
 web
-
-.classpath
-.project
 out
+/.settings
+/.classpath
+/.project
