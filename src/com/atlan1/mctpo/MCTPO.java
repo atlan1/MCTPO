@@ -38,9 +38,9 @@ public class MCTPO extends Applet implements Runnable{
 	public static Sky sky;
 	public static Character character;
 	
-	public static Cursor destroyCursor = Toolkit.getDefaultToolkit().createCustomCursor(TextureLoader.loadImage("res/DestroyCursor.png"), mouse, "DestroyCursor");
-	public static Cursor buildCursor = Toolkit.getDefaultToolkit().createCustomCursor(TextureLoader.loadImage("res/BuildCursor.png"), mouse, "BuildCursor");
-	public static Cursor crossHair = Toolkit.getDefaultToolkit().createCustomCursor(TextureLoader.loadImage("res/CrossHair.png"), mouse, "CrosshairCursor");
+	public static Cursor destroyCursor = Toolkit.getDefaultToolkit().createCustomCursor(TextureLoader.loadImage("/res/DestroyCursor.png"), mouse, "DestroyCursor");
+	public static Cursor buildCursor = Toolkit.getDefaultToolkit().createCustomCursor(TextureLoader.loadImage("/res/BuildCursor.png"), mouse, "BuildCursor");
+	public static Cursor crossHair = Toolkit.getDefaultToolkit().createCustomCursor(TextureLoader.loadImage("/res/CrossHair.png"), mouse, "CrosshairCursor");
 	
 	public MCTPO() {
 		MCTPO.mctpo = this;
@@ -80,7 +80,7 @@ public class MCTPO extends Applet implements Runnable{
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
-		frame.setIconImage(TextureLoader.loadImage("res/icon.png"));
+		frame.setIconImage(TextureLoader.loadImage("/res/icon.png"));
 		frame.setAlwaysOnTop(true);
 		c.start();
 	}
@@ -115,7 +115,7 @@ public class MCTPO extends Applet implements Runnable{
 			render();
 			
 			try{
-				Thread.sleep(15);
+				Thread.sleep(18);
 			}catch(Throwable t){}
 		}
 	}

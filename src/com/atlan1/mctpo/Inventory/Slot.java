@@ -1,16 +1,16 @@
 package com.atlan1.mctpo.Inventory;
 
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
 import com.atlan1.mctpo.ItemStack;
 import com.atlan1.mctpo.Texture.TextureLoader;
 
 public class Slot extends Rectangle{
 	private static final long serialVersionUID = 1L;
 	
-	public static BufferedImage slotNormal= TextureLoader.loadImage("res/slot_normal.png");
-	public static BufferedImage slotSelected= TextureLoader.loadImage("res/slot_selected.png");
+	public static Image slotNormal= TextureLoader.loadImage("/res/slot_normal.png");
+	public static Image slotSelected= TextureLoader.loadImage("/res/slot_selected.png");
 	
 	public ItemStack itemstack;
 	

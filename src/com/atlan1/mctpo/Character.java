@@ -1,10 +1,10 @@
 package com.atlan1.mctpo;
 
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Shape;
 import java.awt.geom.Line2D;
-import java.awt.image.BufferedImage;
 import java.awt.image.FilteredImageSource;
 import java.awt.image.ImageFilter;
 import java.awt.image.ImageProducer;
@@ -22,11 +22,11 @@ import com.atlan1.mctpo.Texture.ColorMultiFilter;
 import com.atlan1.mctpo.Texture.TextureLoader;
 
 public class Character extends DoubleRectangle implements LivingThing{
-	private static BufferedImage animationTexture;
-	private static BufferedImage damageAnimationTexture;
+	private static Image animationTexture;
+	private static Image damageAnimationTexture;
 	private static int[]  character = {0, 0};
 	static{
-		animationTexture = TextureLoader.loadImage("res/animation.png");
+		animationTexture = TextureLoader.loadImage("/res/animation.png");
 		ImageFilter redfilter = new ColorMultiFilter(2, 0, 0);
 		ImageProducer imageprod = new FilteredImageSource(animationTexture.getSource(), redfilter);
 		damageAnimationTexture = MCTPO.toBufferedImage(MCTPO.mctpo.createImage(imageprod));

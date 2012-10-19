@@ -1,7 +1,7 @@
 package com.atlan1.mctpo.HUD;
 
 import java.awt.Graphics;
-import java.awt.image.BufferedImage;
+import java.awt.Image;
 
 import com.atlan1.mctpo.Character;
 import com.atlan1.mctpo.MCTPO;
@@ -11,8 +11,8 @@ import com.atlan1.mctpo.Texture.TextureLoader;
 
 public class HealthBar implements Widget{
 
-	private static BufferedImage hIcon = TextureLoader.loadImage("res/heart.png");
-	private static BufferedImage hblackIcon = TextureLoader.loadImage("res/heart_black.png");
+	private static Image hIcon = TextureLoader.loadImage("/res/heart.png");
+	private static Image hblackIcon = TextureLoader.loadImage("/res/heart_black.png");
 	private Character c;
 	
 	public boolean render = true;
