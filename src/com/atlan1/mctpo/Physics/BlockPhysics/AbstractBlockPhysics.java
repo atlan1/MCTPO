@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.atlan1.mctpo.Block;
-import com.atlan1.mctpo.Thing;
+import com.atlan1.mctpo.API.Thing;
 import com.atlan1.mctpo.Physics.AbstractPhysics;
 
 public abstract class AbstractBlockPhysics implements AbstractPhysics<Boolean>{

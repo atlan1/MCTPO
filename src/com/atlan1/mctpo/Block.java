@@ -5,6 +5,8 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.atlan1.mctpo.API.Thing;
+
 public class Block extends Rectangle implements Thing{
 	private static final long serialVersionUID = 1L;
 	
@@ -25,7 +27,7 @@ public class Block extends Rectangle implements Thing{
 	
 	public void render(Graphics g) {
 		if(material != Material.AIR){
-			g.drawImage(Material.terrain.getSubImageById(material.id), (int)x - (int) MCTPO.sX, (int)y - (int) MCTPO.sY, (int)(x + width) - (int) MCTPO.sX, (int)(y + height) - (int) MCTPO.sY, 0, 0, MCTPO.tileSize, MCTPO.tileSize, null);
+			g.drawImage(Material.terrain.getSubImageById(material.id), (int)x - (int) MCTPO.sX, (int)y - (int) MCTPO.sY, (int)(x + width) - (int) MCTPO.sX, (int)(y + height) - (int) MCTPO.sY, 0, 0, MCTPO.blockSize, MCTPO.blockSize, null);
 		}
 	}
 	
@@ -62,10 +64,10 @@ public class Block extends Rectangle implements Thing{
 	}
 	
 	public int getGridX(){
-		return x/MCTPO.tileSize;
+		return x/MCTPO.blockSize;
 	}
 	
 	public int getGridY(){
-		return y/MCTPO.tileSize;
+		return y/MCTPO.blockSize;
 	}
 }

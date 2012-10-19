@@ -7,6 +7,8 @@ import java.awt.event.MouseWheelListener;
 
 import com.atlan1.mctpo.MCTPO;
 import com.atlan1.mctpo.Character;
+import com.atlan1.mctpo.HUD.InventoryBar;
+import com.atlan1.mctpo.Inventory.Inventory;
 
 public class MouseListener implements MouseMotionListener, MouseWheelListener,
 		java.awt.event.MouseListener {
@@ -35,8 +37,8 @@ public class MouseListener implements MouseMotionListener, MouseWheelListener,
 		}else if(e.getButton() == MouseEvent.BUTTON3){
 			MCTPO.mouseRightDown = true;
 		}
-		if(c.inventory.isOpen()) {
-			c.inventory.onClick(e.getButton());
+		if(c.inv.isOpen()) {
+			c.inv.onClick(e.getButton());
 		}
 	}
 
@@ -50,15 +52,15 @@ public class MouseListener implements MouseMotionListener, MouseWheelListener,
 
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		if(e.getWheelRotation()<0){//up
-			if(c.inventory.selected==0){
-				c.inventory.selected=c.inventory.invLength-1;
+			if(c.hud.getWidget(InventoryBar.class).selected==0){
+				c.hud.getWidget(InventoryBar.class).selected=Inventory.invLength-1;
 			}else
-				c.inventory.selected-=1;
+				c.hud.getWidget(InventoryBar.class).selected-=1;
 		}else if(e.getWheelRotation()>0){//down
-			if(c.inventory.selected==c.inventory.invLength-1){
-				c.inventory.selected = 0;
+			if(c.hud.getWidget(InventoryBar.class).selected==Inventory.invLength-1){
+				c.hud.getWidget(InventoryBar.class).selected = 0;
 			}else
-				c.inventory.selected+=1;
+				c.hud.getWidget(InventoryBar.class).selected+=1;
 		}
 	}
 

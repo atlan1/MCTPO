@@ -1,7 +1,7 @@
 package com.atlan1.mctpo.Physics.BlockPhysics;
 
 import com.atlan1.mctpo.Block;
-import com.atlan1.mctpo.Thing;
+import com.atlan1.mctpo.API.Thing;
 
 public interface BlockPhysics {
 

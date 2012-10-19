@@ -1,11 +1,9 @@
-package com.atlan1.mctpo.Inventory;
+package com.atlan1.mctpo;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 
-import com.atlan1.mctpo.MCTPO;
-import com.atlan1.mctpo.Material;
 
 public class ItemStack{
 	public Material material;
@@ -15,6 +13,11 @@ public class ItemStack{
 		material = mat;
 	}
 	
+	public ItemStack(Material mat, int stack) {
+		material = mat;
+		stacksize = stack;
+	}
+	
 	public ItemStack(ItemStack i){
 		material = i.material;
 		stacksize = i.stacksize;
@@ -22,7 +25,7 @@ public class ItemStack{
 	
 	public void render(Graphics g, int x, int y, int width, int height) {
 		if(stacksize>0&&material!=Material.AIR){
-			g.drawImage(Material.terrain.getSubImageById(material.id), (int)x, (int)(y), (int)(width), (int)(height), 0, 0, MCTPO.tileSize, MCTPO.tileSize, null);
+			g.drawImage(Material.terrain.getSubImageById(material.id), (int)x, (int)(y), (int)(width), (int)(height), 0, 0, MCTPO.blockSize, MCTPO.blockSize, null);
 			g.setColor(new Color(255, 255, 200));
 			g.setFont(Font.getFont("Tahoma"));
 			g.drawString(stacksize+"", width-8, height);

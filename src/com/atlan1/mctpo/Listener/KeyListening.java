@@ -6,6 +6,7 @@ import java.awt.event.KeyListener;
 import com.atlan1.mctpo.Character;
 import com.atlan1.mctpo.MCTPO;
 import com.atlan1.mctpo.Material;
+import com.atlan1.mctpo.HUD.InventoryBar;
 
 public class KeyListening implements KeyListener {
 
@@ -30,8 +31,8 @@ public class KeyListening implements KeyListener {
 				c.wouldJump = true;
 				break;
 			case KeyEvent.VK_Q:
-				c.inventory.barSlots[c.inventory.selected].itemstack.material = Material.AIR;
-				c.inventory.barSlots[c.inventory.selected].itemstack.stacksize = 0;
+				c.hud.getWidget(InventoryBar.class).slots[c.hud.getWidget(InventoryBar.class).selected].itemstack.material = Material.AIR;
+				c.hud.getWidget(InventoryBar.class).slots[c.hud.getWidget(InventoryBar.class).selected].itemstack.stacksize = 0;
 				break;
 			case KeyEvent.VK_CONTROL:
 				MCTPO.mctpo.controlDown = true;
@@ -40,7 +41,7 @@ public class KeyListening implements KeyListener {
 				System.exit(0);
 				break;
 			case KeyEvent.VK_E:
-				c.inventory.setOpen(!c.inventory.isOpen());
+				c.inv.setOpen(!c.inv.isOpen());
 				break;
 		}
 	}

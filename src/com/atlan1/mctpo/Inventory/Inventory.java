@@ -8,34 +8,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.atlan1.mctpo.Character;
+import com.atlan1.mctpo.ItemStack;
 import com.atlan1.mctpo.MCTPO;
 import com.atlan1.mctpo.Material;
+import com.atlan1.mctpo.API.Widget;
+import com.atlan1.mctpo.HUD.InventoryBar;
 
-public class Inventory {
+public class Inventory implements Widget{
 	
 	private boolean open = false;
 	private ItemStack onCursor = new ItemStack(Material.AIR);
 	
-	public int invLength = 8;
-	public int invHeight = 5;
-	public int slotSize = 25;
-	public int slotSpace = 5;
-	public int borderSpace = 20;
-	public int itemBorder = 3;
-	public int maxStackSize = 64;
-	public int cursorSize = 20;
+	public static int invLength = 8;
+	public static int invHeight = 5;
+	public static int slotSize = 25;
+	public static int slotSpace = 5;
+	public static int borderSpace = 20;
+	public static int itemBorder = 3;
+	public static int maxStackSize = 64;
+	public static int cursorSize = 20;
 	
-	public Slot[] barSlots = new Slot[invLength];
+	private InventoryBar invBar;
 	public Slot[] slots = new Slot[invLength*invHeight];
-	public int selected=0;
 	
-	public Inventory(Character c){
-		for(int i=0;i<barSlots.length;i++){
-			barSlots[i] = new Slot(this, null, new Rectangle((MCTPO.pixel.width/2)-((invLength * (slotSize + slotSpace))/2)+((i * (slotSize + slotSpace))), MCTPO.pixel.height - (slotSize + borderSpace), slotSize, slotSize), Material.AIR);
+	public Inventory(Character c, InventoryBar invBar){
+		this.invBar = invBar;
+		for(int i=0;i<slots.length;i++){
+			slots[i] = new Slot(new ItemStack(Material.AIR));
 		}
+		calcPosition();
+	}
+	
+	public void calcPosition() {
 		int x=0, y=0;
 		for(int i=0;i<slots.length;i++){
-			slots[i] = new Slot(this ,i<barSlots.length?barSlots[i]:null, new Rectangle((MCTPO.pixel.width/2)-((invLength * (slotSize + slotSpace))/2)+((x * (slotSize + slotSpace))), (MCTPO.pixel.height + (slotSize + borderSpace) - (invHeight * (slotSize + slotSpace))) - (y * (slotSize+slotSpace))-(MCTPO.pixel.height/6), slotSize, slotSize), Material.AIR);
+			slots[i].setBounds(new Rectangle((MCTPO.pixel.width/2)-((invLength * (slotSize + slotSpace))/2)+((x * (slotSize + slotSpace))), (MCTPO.pixel.height + (slotSize + borderSpace) - (invHeight * (slotSize + slotSpace))) - (y * (slotSize+slotSpace)), slotSize, slotSize));
 			x++;
 			if(x>=invLength){
 				x=0;
@@ -53,20 +60,24 @@ public class Inventory {
 		}
 		if(b==1&&clicked!=null){
 			if(onCursor.material == Material.AIR){
-				onCursor = clicked.itemstack;
+				onCursor = new ItemStack(clicked.itemstack);
 				clicked.itemstack = new ItemStack(Material.AIR);
 			}else if(onCursor.material == clicked.itemstack.material){
 				if(clicked.itemstack.stacksize+onCursor.stacksize<=maxStackSize){
 					clicked.itemstack.stacksize += onCursor.stacksize;
 					onCursor.stacksize = 0;
-				} else if(clicked.itemstack.stacksize+onCursor.stacksize>maxStackSize){
-					int before = clicked.itemstack.stacksize;
+				}else if(clicked.itemstack.stacksize==maxStackSize){
+					ItemStack i = new ItemStack(clicked.itemstack);
+					clicked.itemstack = new ItemStack(onCursor);
+					onCursor = i;
+				}else if(clicked.itemstack.stacksize+onCursor.stacksize>maxStackSize){
+					int delta = ((clicked.itemstack.stacksize+onCursor.stacksize)-maxStackSize);
 					clicked.itemstack.stacksize = maxStackSize;
-					onCursor.stacksize = maxStackSize - before;
+					onCursor.stacksize -= delta;
 				}
 			}else if(onCursor.material != Material.AIR){
-				ItemStack temp = clicked.itemstack;
-				clicked.itemstack = onCursor;
+				ItemStack temp = new ItemStack(clicked.itemstack);
+				clicked.itemstack = new ItemStack(onCursor);
 				if(clicked.itemstack.material!=Material.AIR){
 					onCursor = temp;
 				}else{
@@ -82,15 +93,14 @@ public class Inventory {
 				clicked.itemstack.stacksize = rest;
 			}else if(onCursor.material != Material.AIR){
 				if(clicked.itemstack.material == Material.AIR){
-					clicked.itemstack.material = onCursor.material;
-					clicked.itemstack.stacksize = 1;
+					clicked.itemstack = new ItemStack(onCursor.material, 1);
 					onCursor.stacksize--;
 				}else if(clicked.itemstack.material == onCursor.material) {
 					clicked.itemstack.stacksize++;
 					onCursor.stacksize--;
 				}else if(clicked.itemstack.material != Material.AIR){
-					ItemStack temp = clicked.itemstack;
-					clicked.itemstack = onCursor;
+					ItemStack temp = new ItemStack(clicked.itemstack);
+					clicked.itemstack = new ItemStack(onCursor);
 					if(clicked.itemstack.material!=Material.AIR){
 						onCursor = temp;
 					}else{
@@ -102,9 +112,6 @@ public class Inventory {
 	}
 	
 	public void render(Graphics g){
-		for(int i=0;i<barSlots.length;i++){
-			barSlots[i].render(g, i==selected);
-		}
 		if(open){
 			g.setColor(new Color(200, 200, 200, 130));
 			g.fillRect(0, 0, MCTPO.pixel.width, MCTPO.pixel.height);
@@ -120,6 +127,11 @@ public class Inventory {
 	public void tick() {
 		for(Slot s : slots) {
 			s.tick();
+		}
+		for(int i=0;i<Inventory.invLength;i++){
+			if(!(slots[i].equals(invBar.slots[i]))){
+				invBar.slots[i].itemstack = new ItemStack(slots[i].itemstack);
+			}
 		}
 	}
 	

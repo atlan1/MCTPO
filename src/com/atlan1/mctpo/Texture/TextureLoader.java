@@ -11,7 +11,7 @@ public class TextureLoader {
 
 	public static SpriteImage loadSpriteImage(String path) {
 		try {
-			return new SpriteImage(ImageIO.read(new File(path)), MCTPO.tileSize);
+			return new SpriteImage(ImageIO.read(new File(path)), MCTPO.blockSize);
 		} catch (Exception e) {e.printStackTrace();}
 		return null;
 	}

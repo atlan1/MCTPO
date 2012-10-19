@@ -22,10 +22,10 @@ public class MCTPO extends Applet implements Runnable{
 	public static int pixelSize = 2;
 	private Image screen;
 
+	public static int blockSize = 20;
 	
-	public static int tileSize = 20;
-	
-	public static Dimension size = new Dimension(1400, 1000);
+	public static final Dimension minSize = new Dimension(700, 500);
+	public static Dimension size = new Dimension(700, 500);
 	public static Dimension pixel = new Dimension(size.width/pixelSize, size.height/pixelSize);
 	public static String name = "Minecraft Two Point o.O";
 	public static double sX = 0, sY = 0;
@@ -51,7 +51,7 @@ public class MCTPO extends Applet implements Runnable{
 		setCursor(buildCursor);
 		requestFocus();
 		
-		character = new Character(MCTPO.tileSize, MCTPO.tileSize * 2);
+		character = new Character(MCTPO.blockSize, MCTPO.blockSize * 2);
 		world = new World(character);
 		sky = new Sky();
 		
@@ -74,8 +74,8 @@ public class MCTPO extends Applet implements Runnable{
 		MCTPO c = new MCTPO();
 		frame = new JFrame(name);
 		frame.add(c);
+		frame.setMinimumSize(minSize);
 		frame.setSize(size);
-		frame.pack();
 		frame.setResizable(true);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -88,18 +88,19 @@ public class MCTPO extends Applet implements Runnable{
 	public void tick() {
 		character.tick();
 		sky.tick();
-		world.tick((int)sX, (int)sY, (pixel.width / tileSize) + 8, (pixel.height / tileSize) + 8);
-		character.inventory.tick();
+		world.tick((int)sX, (int)sY, (pixel.width / blockSize) + 8, (pixel.height / blockSize) + 8);
 	}
 	
 	public void render() {
+		calcSize();
+		
 		Graphics g = screen.getGraphics();
 		sky.render(g);
 		
 		character.render(g);
-		world.render(g, (int)sX, (int)sY, (pixel.width / tileSize) + 2, (pixel.height / tileSize) + 2);
-		character.healthBar.render(g);
-		character.inventory.render(g);
+		world.render(g, (int)sX, (int)sY, (pixel.width / blockSize) + 2, (pixel.height / blockSize) + 2);
+		character.hud.render(g);
+		character.inv.render(g);
 		g = getGraphics();
 		g.drawImage(screen, 0, 0, size.width, size.height, 0, 0, pixel.width, pixel.height, null);
 		g.dispose();
@@ -117,6 +118,22 @@ public class MCTPO extends Applet implements Runnable{
 				Thread.sleep(15);
 			}catch(Throwable t){}
 		}
+	}
+	
+	public void calcSize() { 
+		if(!this.getSize().equals(size)){
+			size = new Dimension(this.getSize());
+			pixel = new Dimension(size.width/pixelSize, size.height/pixelSize);
+			screen = createVolatileImage(pixel.width, pixel.height);
+			character.hud.calcPosition();
+			character.inv.calcPosition();
+			moveCamera((int)character.x, (int)character.y);
+		}
+	}
+	
+	public void moveCamera(int x, int y) {
+		MCTPO.sY = y - (MCTPO.pixel.height / 2);
+		MCTPO.sX = x - (MCTPO.pixel.width / 2);
 	}
 
 	public static BufferedImage toBufferedImage(Image image) {

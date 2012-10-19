@@ -1,4 +1,4 @@
-package com.atlan1.mctpo;
+package com.atlan1.mctpo.API;
 
 public interface LivingThing extends Thing {
 
