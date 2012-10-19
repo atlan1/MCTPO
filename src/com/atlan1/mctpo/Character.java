@@ -220,21 +220,33 @@ public class Character extends DoubleRectangle implements LivingThing{
 	}
 	
 	public Block getCurrentBlock(){
-		Block[][] blocks = World.blocks;
-		int camX=(int)MCTPO.sX;
-		int camY=(int)MCTPO.sY;
-		int renW=(MCTPO.pixel.width / MCTPO.tileSize) + 2;
-		int renH=(MCTPO.pixel.height / MCTPO.tileSize) + 2;
-		for(int x=(camX/MCTPO.tileSize);x<(camX/MCTPO.tileSize) + renW;x++){
-			for(int y=(camY/MCTPO.tileSize);y<(camY/MCTPO.tileSize) + renH;y++){
-				if(x>=0 && y>=0 && x<World.worldW && y<World.worldH){
-					if(blocks[x][y].contains(new Point(MCTPO.mouse.x + (int)MCTPO.sX, MCTPO.mouse.y + (int)MCTPO.sY))){
-						return blocks[x][y];
+		if (MCTPO.mouseLeftDown || MCTPO.mouseRightDown) {
+			//Block[][] blocks = World.blocks;
+			/*int camX=(int)MCTPO.sX;
+			int camY=(int)MCTPO.sY;
+			int renW=(MCTPO.pixel.width / MCTPO.tileSize) + 2;
+			int renH=(MCTPO.pixel.height / MCTPO.tileSize) + 2;*/
+			/*for(int x=(camX/MCTPO.tileSize);x<(camX/MCTPO.tileSize) + renW;x++){
+				for(int y=(camY/MCTPO.tileSize);y<(camY/MCTPO.tileSize) + renH;y++){
+					if(x>=0 && y>=0 && x<World.worldW && y<World.worldH){
+						if(blocks[x][y].contains(new Point(MCTPO.fingerBuildP.x + (int)MCTPO.sX, MCTPO.fingerBuildP.y + (int)MCTPO.sY))){
+							return blocks[x][y];
+						}
 					}
 				}
+			}*/
+			try {
+				Block b = getBlockIncluding(MCTPO.mouse.x, MCTPO.mouse.y); //changed for better performance
+				return b;
+			} catch (Exception e) {
+				
 			}
 		}
 		return null;
+	}
+	
+	public Block getBlockIncluding(double x, double y) {
+		return World.blocks[(int) ((x + MCTPO.sX) / MCTPO.tileSize)][(int) ((y + MCTPO.sY) / MCTPO.tileSize)];
 	}
 	
 	public boolean isBlockInBuildRange(Block block) {
@@ -318,3 +330,4 @@ public class Character extends DoubleRectangle implements LivingThing{
 		return this;
 	}
 }
+
