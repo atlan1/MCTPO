@@ -72,9 +72,9 @@ public class World {
 			for(int y=(camY/MCTPO.tileSize);y<(camY/MCTPO.tileSize) + renH;y++){
 				if(x>=0 && y>=0 && x<worldW && y<worldH){
 					blocks[x][y].render(g);
-					if(blocks[x][y].contains(new Point(MCTPO.mouse.x + (int)MCTPO.sX, MCTPO.mouse.y + (int)MCTPO.sY))&&character.isBlockInBuildRange(blocks[x][y])){
-						g.setColor(new Color(0, 0, 0));
-						g.drawRect(blocks[x][y].x-camX, blocks[x][y].y-camY, blocks[x][y].width-1, blocks[x][y].height-1);
+					if(!character.inventory.isOpen()&&blocks[x][y].contains(new Point(MCTPO.mouse.x + (int)MCTPO.sX, MCTPO.mouse.y + (int)MCTPO.sY))&&character.isBlockInBuildRange(blocks[x][y])){
+						g.setColor(new Color(230, 230, 230, 60));
+						g.fillRect(blocks[x][y].x-camX, blocks[x][y].y-camY, blocks[x][y].width, blocks[x][y].height);
 					}
 				}
 			}

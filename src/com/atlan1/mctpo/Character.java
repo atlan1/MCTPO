@@ -105,7 +105,7 @@ public class Character extends DoubleRectangle implements LivingThing{
 				isFalling = true;
 			}
 		}else{
-			if(wouldJump)
+			if(wouldJump&&!inventory.isOpen())
 				isJumping = true;
 		}
 		
@@ -116,49 +116,51 @@ public class Character extends DoubleRectangle implements LivingThing{
 			startFalling=0;
 			isFalling = false;
 		}
-		if(isJumping){
-			boolean canJump = !isCollidingWithAnyBlock(bounds[bUP]);
-			if(canJump){
-				if(jumpHeight<=jumpCount){
+		if(!inventory.isOpen()){
+			if(isJumping){
+				boolean canJump = !isCollidingWithAnyBlock(bounds[bUP]);
+				if(canJump){
+					if(jumpHeight<=jumpCount){
+						isJumping = false;
+						jumpCount = 0;
+					}else{
+						y-=jumpingSpeed;
+						MCTPO.sY-=jumpingSpeed;
+						jumpCount++;
+					}
+				}else{
 					isJumping = false;
 					jumpCount = 0;
+				}
+			}		
+			if(isMoving){
+				boolean canMove = false;
+				
+				if(dir == movementSpeed){
+					canMove = !isCollidingWithAnyBlock(bounds[bRIGHT]);
+				}else if (dir == -movementSpeed){
+					canMove = !isCollidingWithAnyBlock(bounds[bLEFT]);
+				}
+				
+				if(animationFrame >= (isSprinting?sprintAnimationTime:animationTime)) {
+					if(animation<3){
+						animation++;
+						animationFrame=0;
+					}else{
+						animation=0;
+						animationFrame=0;
+					}
 				}else{
-					y-=jumpingSpeed;
-					MCTPO.sY-=jumpingSpeed;
-					jumpCount++;
+					animationFrame+=1;
+				}
+				
+				if(canMove){
+					x+=isSprinting?dir<0?dir-sprintSpeed:dir+sprintSpeed:dir;
+					MCTPO.sX+=isSprinting?dir<0?dir-sprintSpeed:dir+sprintSpeed:dir;
 				}
 			}else{
-				isJumping = false;
-				jumpCount = 0;
+				animation = 1;
 			}
-		}		
-		if(isMoving){
-			boolean canMove = false;
-			
-			if(dir == movementSpeed){
-				canMove = !isCollidingWithAnyBlock(bounds[bRIGHT]);
-			}else if (dir == -movementSpeed){
-				canMove = !isCollidingWithAnyBlock(bounds[bLEFT]);
-			}
-			
-			if(animationFrame >= (isSprinting?sprintAnimationTime:animationTime)) {
-				if(animation<3){
-					animation++;
-					animationFrame=0;
-				}else{
-					animation=0;
-					animationFrame=0;
-				}
-			}else{
-				animationFrame+=1;
-			}
-			
-			if(canMove){
-				x+=isSprinting?dir<0?dir-sprintSpeed:dir+sprintSpeed:dir;
-				MCTPO.sX+=isSprinting?dir<0?dir-sprintSpeed:dir+sprintSpeed:dir;
-			}
-		}else{
-			animation = 1;
 		}
 		if(firstHealth-health>0){
 			damaged = true;
@@ -171,22 +173,26 @@ public class Character extends DoubleRectangle implements LivingThing{
 				damageFrame++;
 			}
 		}
-		if(currentBlock!=null&&currentBlock.material.nonSolid&&isBlockInBuildRange(currentBlock))
-			MCTPO.mctpo.setCursor(MCTPO.buildCursor);
-		else if(currentBlock!=null&&!currentBlock.material.nonSolid&&isBlockInBuildRange(currentBlock)){
-			MCTPO.mctpo.setCursor(MCTPO.destroyCursor);
-		}else if(currentBlock!=null&&!isBlockInBuildRange(currentBlock)){
+		if(!inventory.isOpen()){
+			if(currentBlock!=null&&currentBlock.material.nonSolid&&isBlockInBuildRange(currentBlock))
+				MCTPO.mctpo.setCursor(MCTPO.buildCursor);
+			else if(currentBlock!=null&&!currentBlock.material.nonSolid&&isBlockInBuildRange(currentBlock)){
+				MCTPO.mctpo.setCursor(MCTPO.destroyCursor);
+			}else if(currentBlock!=null&&!isBlockInBuildRange(currentBlock)){
+				MCTPO.mctpo.setCursor(MCTPO.crossHair);
+			}
+			if(currentBlock!=null&&lastBlock!=null&&MCTPO.mouseLeftDown&&lastBlock.equals(currentBlock)&&isBlockInBuildRange(currentBlock)){
+				destroyTime++;
+			}else{
+				destroyTime=0;
+			}
+			lastBlock = currentBlock;
+			currentBlock = getCurrentBlock();
+			if(currentBlock!=null)
+				build();
+		}else{
 			MCTPO.mctpo.setCursor(MCTPO.crossHair);
 		}
-		if(currentBlock!=null&&lastBlock!=null&&MCTPO.mouseLeftDown&&lastBlock.equals(currentBlock)&&isBlockInBuildRange(currentBlock)){
-			destroyTime++;
-		}else{
-			destroyTime=0;
-		}
-		lastBlock = currentBlock;
-		currentBlock = getCurrentBlock();
-		if(currentBlock!=null)
-			build();
 		if(health<=0){
 			inventory.clear();
 			this.respawn();
@@ -244,35 +250,35 @@ public class Character extends DoubleRectangle implements LivingThing{
 						boolean check = false;
 						Slot[] slots = inventory.getSlotsContaining(m);
 						for(Slot s : slots){
-							if(s.stackSize<inventory.maxStackSize){
-								s.stackSize++;
+							if(s.itemstack.stacksize<inventory.maxStackSize){
+								s.itemstack.stacksize++;
 								check = true;
 								break;
 							}
 						}
 						if(!check && inventory.containsMaterial(Material.AIR)){
 							Slot s2 = inventory.getSlot(Material.AIR);
-							s2.material = m;
-							s2.stackSize++;
+							s2.itemstack.material = m;
+							s2.itemstack.stacksize++;
 						}
 					}else if(inventory.containsMaterial(Material.AIR)){
 						Slot s3 = inventory.getSlot(Material.AIR);
-						s3.material = m;
-						s3.stackSize++;
+						s3.itemstack.material = m;
+						s3.itemstack.stacksize++;
 					}
 					currentBlock.material = Material.AIR;
 					destroyTime = 0;
 				}
 				return;
 			}else if(MCTPO.mouseRightDown && m.nonSolid){
-				if(!(inventory.slots[inventory.selected].material == Material.AIR)){
-					if(inventory.slots[inventory.selected].stackSize>0)
-						inventory.slots[inventory.selected].stackSize--;
+				if(!(inventory.barSlots[inventory.selected].itemstack.material == Material.AIR)){
+					if(inventory.barSlots[inventory.selected].itemstack.stacksize>0)
+						inventory.barSlots[inventory.selected].itemstack.stacksize--;
 					else{
-						inventory.slots[inventory.selected].stackSize = 0;
-						inventory.slots[inventory.selected].material = Material.AIR;
+						inventory.barSlots[inventory.selected].itemstack.stacksize = 0;
+						inventory.barSlots[inventory.selected].itemstack.material = Material.AIR;
 					}
-					currentBlock.material = inventory.slots[inventory.selected].material;
+					currentBlock.material = inventory.barSlots[inventory.selected].itemstack.material;
 					return;
 				}
 			}

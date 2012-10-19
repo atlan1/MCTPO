@@ -30,14 +30,18 @@ public class KeyListening implements KeyListener {
 				c.wouldJump = true;
 				break;
 			case KeyEvent.VK_Q:
-				c.inventory.slots[c.inventory.selected].material = Material.AIR;
-				c.inventory.slots[c.inventory.selected].stackSize = 0;
+				c.inventory.barSlots[c.inventory.selected].itemstack.material = Material.AIR;
+				c.inventory.barSlots[c.inventory.selected].itemstack.stacksize = 0;
 				break;
 			case KeyEvent.VK_CONTROL:
 				MCTPO.mctpo.controlDown = true;
 				break;
 			case KeyEvent.VK_ESCAPE:
 				System.exit(0);
+				break;
+			case KeyEvent.VK_E:
+				c.inventory.setOpen(!c.inventory.isOpen());
+				break;
 		}
 	}
 

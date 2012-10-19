@@ -98,8 +98,8 @@ public class MCTPO extends Applet implements Runnable{
 		
 		character.render(g);
 		world.render(g, (int)sX, (int)sY, (pixel.width / tileSize) + 2, (pixel.height / tileSize) + 2);
-		character.inventory.render(g);
 		character.healthBar.render(g);
+		character.inventory.render(g);
 		g = getGraphics();
 		g.drawImage(screen, 0, 0, size.width, size.height, 0, 0, pixel.width, pixel.height, null);
 		g.dispose();

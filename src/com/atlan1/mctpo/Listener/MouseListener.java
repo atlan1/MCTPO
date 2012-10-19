@@ -35,6 +35,9 @@ public class MouseListener implements MouseMotionListener, MouseWheelListener,
 		}else if(e.getButton() == MouseEvent.BUTTON3){
 			MCTPO.mouseRightDown = true;
 		}
+		if(c.inventory.isOpen()) {
+			c.inventory.onClick(e.getButton());
+		}
 	}
 
 	public void mouseReleased(MouseEvent e) {
