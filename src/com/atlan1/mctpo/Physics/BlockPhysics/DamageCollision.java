@@ -1,6 +1,7 @@
 package com.atlan1.mctpo.Physics.BlockPhysics;
 
 import com.atlan1.mctpo.Block;
+import com.atlan1.mctpo.MCTPO;
 import com.atlan1.mctpo.API.LivingThing;
 import com.atlan1.mctpo.API.Thing;
 
@@ -16,7 +17,7 @@ public class DamageCollision extends AbstractBlockPhysics{
 
 	public boolean damage(Block b, Thing t){
 		addId(b);
-		if(t instanceof LivingThing&&b.framesSinceUpdate.get(getId(b))<=tick){
+		if(t instanceof LivingThing&&MCTPO.thisTime - b.timeOfUpdate.get(getId(b))<=tick){
 			((LivingThing)t).setHealth(((LivingThing)t).getHealth() - damage);
 			b.update(getId(b));
 		}

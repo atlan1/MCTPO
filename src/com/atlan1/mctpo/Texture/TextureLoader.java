@@ -33,30 +33,26 @@ public class TextureLoader {
 		return null;
 	}
 	
-      public static Image getImage(String name) {
+      private static Image getImage(String name) throws IOException {
          InputStream instream;
          byte[] bytedata;
          int bytelenght;
          Toolkit toolkit = Toolkit.getDefaultToolkit();
-         try {
-            instream = loader.getClass().getResourceAsStream(name); 
-         
-            ByteArrayOutputStream bytes;
-         
-            bytes = new ByteArrayOutputStream();
-            bytelenght = 1024;
-            bytedata = new byte[bytelenght];
-            int rb;
-            while ((rb = instream.read(bytedata, 0, bytelenght)) > -1) {
-               bytes.write(bytedata, 0, rb);
-            }
-            bytes.close();
-            bytedata = bytes.toByteArray();
-            instream.close();
-            Image image = toolkit.createImage(bytedata);
-            return image;
-        }catch (IOException e) {
-           return null;
+        instream = loader.getClass().getResourceAsStream(name); 
+     
+        ByteArrayOutputStream bytes;
+     
+        bytes = new ByteArrayOutputStream();
+        bytelenght = 1024;
+        bytedata = new byte[bytelenght];
+        int rb;
+        while ((rb = instream.read(bytedata, 0, bytelenght)) > -1) {
+           bytes.write(bytedata, 0, rb);
         }
+        bytes.close();
+        bytedata = bytes.toByteArray();
+        instream.close();
+        Image image = toolkit.createImage(bytedata);
+        return image;
       }
 }

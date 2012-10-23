@@ -13,34 +13,46 @@ import com.atlan1.mctpo.Texture.TextureLoader;
 
 
 public class MCTPO extends Applet implements Runnable{
-	public static MCTPO mctpo;
-	public static JFrame frame;
-	
-	private static final long serialVersionUID = 1L;
+	protected static MCTPO mctpo;
+	private static JFrame frame;
 	private static boolean isRunning = false;
 	
-	public static int pixelSize = 2;
+	private static final long serialVersionUID = 1L;
+	
+	public static final int pixelSize = 2;
+	
 	private Image screen;
 
-	public static int blockSize = 20;
+	public static final int blockSize = 20;
 	
+	public static final String name = "Minecraft Two Point o.O";
 	public static final Dimension minSize = new Dimension(700, 500);
 	public static Dimension size = new Dimension(700, 500);
 	public static Dimension pixel = new Dimension(size.width/pixelSize, size.height/pixelSize);
-	public static String name = "Minecraft Two Point o.O";
-	public static double sX = 0, sY = 0;
+	
 	public static Point mouse = new Point(0, 0);
+	public static double camX = 0, camY = 0;
 	public static boolean mouseLeftDown = false;
 	public static boolean mouseRightDown = false;
-	public boolean controlDown = false;
+	public static boolean controlDown = false;
 	
 	public static World world;
 	public static Sky sky;
 	public static Character character;
 	
-	public static Cursor destroyCursor = Toolkit.getDefaultToolkit().createCustomCursor(TextureLoader.loadImage("/res/DestroyCursor.png"), mouse, "DestroyCursor");
-	public static Cursor buildCursor = Toolkit.getDefaultToolkit().createCustomCursor(TextureLoader.loadImage("/res/BuildCursor.png"), mouse, "BuildCursor");
-	public static Cursor crossHair = Toolkit.getDefaultToolkit().createCustomCursor(TextureLoader.loadImage("/res/CrossHair.png"), mouse, "CrosshairCursor");
+	
+	public CollisionDetector collisionDetective = new CollisionDetector();
+	
+	public static final Cursor destroyCursor = Toolkit.getDefaultToolkit().createCustomCursor(TextureLoader.loadImage("/res/DestroyCursor.png"), mouse, "DestroyCursor");
+	public static final Cursor buildCursor = Toolkit.getDefaultToolkit().createCustomCursor(TextureLoader.loadImage("/res/BuildCursor.png"), mouse, "BuildCursor");
+	public static final Cursor crossHair = Toolkit.getDefaultToolkit().createCustomCursor(TextureLoader.loadImage("/res/CrossHair.png"), mouse, "CrosshairCursor");
+	
+	private static long delta = 0;
+	private static long last = 0;
+	private static int fps = 0;
+	private static long fpsCounterTime = 0l;
+	private static int frames = 0;
+	public static long thisTime = 0;
 	
 	public MCTPO() {
 		MCTPO.mctpo = this;
@@ -60,7 +72,7 @@ public class MCTPO extends Applet implements Runnable{
 		this.addMouseMotionListener(ml);
 		this.addMouseWheelListener(ml);
 		this.addKeyListener(new KeyListening(character));
-		
+//		collisionDetective.add(character);
 		isRunning = true;
 		new Thread(this).start();
 	}
@@ -81,14 +93,14 @@ public class MCTPO extends Applet implements Runnable{
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.setIconImage(TextureLoader.loadImage("/res/icon.png"));
-		frame.setAlwaysOnTop(true);
 		c.start();
 	}
 	
-	public void tick() {
-		character.tick();
-		sky.tick();
-		world.tick((int)sX, (int)sY, (pixel.width / blockSize) + 8, (pixel.height / blockSize) + 8);
+	public void tick(long d) {
+		frames++;
+		character.tick(d);
+		sky.tick(d);
+		world.tick(d);
 	}
 	
 	public void render() {
@@ -98,9 +110,15 @@ public class MCTPO extends Applet implements Runnable{
 		sky.render(g);
 		
 		character.render(g);
-		world.render(g, (int)sX, (int)sY, (pixel.width / blockSize) + 2, (pixel.height / blockSize) + 2);
+		world.render(g);
 		character.hud.render(g);
 		character.inv.render(g);
+		g.setColor(new Color(255, 255, 255));
+		g.drawString("FPS: "+fps, 10, 20);
+		
+		g.setColor(new Color(0, 0,0 ));
+		g.fillRect((int)character.union.x-(int)(MCTPO.camX), (int)character.union.y-(int)(MCTPO.camY), (int)character.union.width, (int)character.union.height);
+		
 		g = getGraphics();
 		g.drawImage(screen, 0, 0, size.width, size.height, 0, 0, pixel.width, pixel.height, null);
 		g.dispose();
@@ -108,15 +126,27 @@ public class MCTPO extends Applet implements Runnable{
 	
 	@Override
 	public void run() {
-		
+		last = System.currentTimeMillis()-1;
 		screen = createVolatileImage(pixel.width, pixel.height);
 		while(isRunning){
-			tick();
+			calcTime();
+//			collisionDetective.checkCollisions();
+			tick(delta); //in milliseconds
 			render();
-			
+			last = thisTime;
 			try{
-				Thread.sleep(18);
+				Thread.sleep(10);
 			}catch(Throwable t){}
+		}
+	}
+	
+	private void calcTime(){
+		thisTime = System.currentTimeMillis();
+		delta = thisTime - last;
+		fps = frames;
+		if(thisTime - fpsCounterTime > 1000){
+			frames = 0;
+			fpsCounterTime = System.currentTimeMillis();
 		}
 	}
 	
@@ -132,8 +162,8 @@ public class MCTPO extends Applet implements Runnable{
 	}
 	
 	public void moveCamera(int x, int y) {
-		MCTPO.sY = y - (MCTPO.pixel.height / 2);
-		MCTPO.sX = x - (MCTPO.pixel.width / 2);
+		MCTPO.camY = y - (MCTPO.pixel.height / 2);
+		MCTPO.camX = x - (MCTPO.pixel.width / 2);
 	}
 
 	public static BufferedImage toBufferedImage(Image image) {

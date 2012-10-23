@@ -1,6 +1,7 @@
 package com.atlan1.mctpo.Physics.BlockPhysics;
 
 import com.atlan1.mctpo.Block;
+import com.atlan1.mctpo.MCTPO;
 import com.atlan1.mctpo.Material;
 import com.atlan1.mctpo.World;
 
@@ -15,7 +16,7 @@ public class FallPhysics extends AbstractBlockPhysics {
 	public boolean fall(Block b){
 		addId(b);
 		if(b!=null){
-			if(b.framesSinceUpdate.get(getId(b))>=tick){
+			if(MCTPO.thisTime - b.timeOfUpdate.get(getId(b))>=tick){
 				Material m = b.material;
 				try{
 					if(World.blocks[b.getGridX()][b.getGridY()+1].material.nonSolid && World.blocks[b.getGridX()][b.getGridY()+1].material != m){

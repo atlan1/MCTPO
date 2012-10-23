@@ -5,7 +5,7 @@ import java.awt.Graphics;
 
 public class Sky {
 
-	public int frame=0, time=12000;
+	public long dayTime=System.currentTimeMillis(), dayLength=120000;
 	private int dayR=60, dayG=110, dayB=255;
 	private int nightR=50, nightG=40, nightB=145;
 	private int nowR, nowG, nowB;
@@ -15,16 +15,14 @@ public class Sky {
 		nowR=dayR; nowG=dayG; nowB=dayB;
 	}
 	
-	public void tick(){
-		if(frame>time){
+	public void tick(long d){
+		if(MCTPO.thisTime - dayTime>dayLength){
 			if(isDay){
 				isDay=false;
 			}else{
 				isDay=true;
 			}
-			frame=0;
-		}else{
-			frame++;
+			dayTime=0;
 		}
 		if(isDay){
 			if(!(nowR==nightR&&nowG==nightG&&nowB==nightB)){

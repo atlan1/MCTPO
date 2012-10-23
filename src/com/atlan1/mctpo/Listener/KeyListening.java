@@ -35,7 +35,7 @@ public class KeyListening implements KeyListener {
 				c.hud.getWidget(InventoryBar.class).slots[c.hud.getWidget(InventoryBar.class).selected].itemstack.stacksize = 0;
 				break;
 			case KeyEvent.VK_CONTROL:
-				MCTPO.mctpo.controlDown = true;
+				MCTPO.controlDown = true;
 				break;
 			case KeyEvent.VK_ESCAPE:
 				System.exit(0);
@@ -63,7 +63,7 @@ public class KeyListening implements KeyListener {
 				c.wouldJump = false;
 				break;
 			case KeyEvent.VK_CONTROL:
-				MCTPO.mctpo.controlDown = false;
+				MCTPO.controlDown = false;
 				break;
 		}
 	}
