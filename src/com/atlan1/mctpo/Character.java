@@ -13,7 +13,6 @@ import java.util.Set;
 
 import com.atlan1.mctpo.API.Collideable;
 import com.atlan1.mctpo.API.Mobile;
-import com.atlan1.mctpo.API.Side;
 import com.atlan1.mctpo.HUD.HUD;
 import com.atlan1.mctpo.HUD.HealthBar;
 import com.atlan1.mctpo.HUD.InventoryBar;
@@ -63,42 +62,16 @@ public class Character extends Rectangle2D.Double implements Mobile{
 	public int destroyTime=0;
 	public Block currentBlock;
 	public Block lastBlock;
-	public final int bUP = 0, bDOWN = 1, bRIGHT = 2, bLEFT = 3;
-//	public Line2D.Double[] bounds = new Line2D.Double[4];
-	public Set<Side> collidesSides = new HashSet<Side>();
 	public Set<Collideable> collisionWith = new HashSet<Collideable>();
 	public Rectangle union = new Rectangle();
-//	public Double lastPosition = new Rectangle2D.Double(x, y, width, height);
 	
 	public Character(double width, double height) {
 		this.width=width;
 		this.height=height;
 		this.x = (MCTPO.pixel.width / 2) - (width / 2);
 		this.y= ((MCTPO.pixel.height / 2) - (height / 2));
-//		lastPosition = new Rectangle2D.Double(x, y, this.width, this.height);
-//		calcBounds();
 	}
 	
-//	public boolean isCollidingWithAnyBlock(Line2D line) {
-//		for(int x=(int)(this.x/MCTPO.blockSize);x<(int)(this.x/MCTPO.blockSize+3);x++)
-//			for(int y=(int)(this.y/MCTPO.blockSize);y<(int)(this.y/MCTPO.blockSize+3);y++)
-//				if(x >= 0 && y >= 0 && x < World.worldW && y < World.worldH){
-//					boolean collide = World.blocks[x][y].contains(line.getP1())|| World.blocks[x][y].contains(line.getP2());
-//					if(!World.blocks[x][y].material.nonSolid&&collide){
-//							return true;
-//					}
-//				}
-//		return false;
-//	}
-//	
-//	public boolean isCollidingWithBlock(Shape t) {
-//		for(Line2D.Double l : bounds){
-//			if(t.contains(l.getP1())||t.contains(l.getP2())){
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
 	
 	public void render(Graphics g){
 		if(dir>=0)
@@ -109,7 +82,6 @@ public class Character extends Rectangle2D.Double implements Mobile{
 	
 	public void tick(long d){
 		isSprinting = MCTPO.controlDown;
-//		collidesSides = getCollisionSides(collisionWith);
 		int firstHealth = health;
 		
 		if(!isJumping){
@@ -119,7 +91,7 @@ public class Character extends Rectangle2D.Double implements Mobile{
 				isFalling = true;
 			}
 		}
-		if(wouldJump&&jumpHeight>jumpCount&&!stopJumping)
+		if(wouldJump&&!stopJumping)
 			isJumping = true;
 		if(isFalling){
 			int deltaFallBlocks = (int) ((this.y-startFalling)/MCTPO.blockSize);
@@ -175,14 +147,14 @@ public class Character extends Rectangle2D.Double implements Mobile{
 				MCTPO.mctpo.setCursor(MCTPO.crossHair);
 			}
 			if(currentBlock!=null&&lastBlock!=null&&MCTPO.mouseLeftDown&&lastBlock.equals(currentBlock)&&isBlockInBuildRange(currentBlock)){
-				destroyTime++;
+				destroyTime+=d;
 			}else{
 				destroyTime=0;
 			}
 			lastBlock = currentBlock;
 			currentBlock = getCurrentBlock();
 			if(currentBlock!=null)
-				build();
+				build(d);
 		}else{
 			MCTPO.mctpo.setCursor(MCTPO.crossHair);
 		}
@@ -195,30 +167,19 @@ public class Character extends Rectangle2D.Double implements Mobile{
 			this.teleport((int) this.x, 0);
 		}
 		
-//		lastPosition.setRect(x, y, width, height);
 		collisionWith = new HashSet<Collideable>();
-		collidesSides = new HashSet<Side>();
 		
 		inv.tick();
 		hud.tick();
 	}
 	
-//	public void calcBounds(){
-//		bounds[bUP] = new Line2D.Double(new Point((int)(x+2), (int) (y+1)), new Point((int)(x + width -2), (int)(y+1)));
-//		bounds[bDOWN] = new Line2D.Double(new Point((int)(x+2), (int) (y+height)), new Point((int)(x+width-2), (int)(y+height)));
-//		bounds[bRIGHT] = new Line2D.Double(new Point((int)(x + width -1), (int) y), new Point((int)(x + width), (int) (y + (height-2))));
-//		bounds[bLEFT] = new Line2D.Double(new Point((int)x-1, (int) y), new Point((int)x-1, (int) (y + (height-2))));
-//	}
-	
 	public Block getCurrentBlock(){
-//		if (MCTPO.mouseLeftDown || MCTPO.mouseRightDown) { Removed due to a small bug with cursors
-			try {
-				Block b = getBlockIncluding(MCTPO.mouse.x, MCTPO.mouse.y);
-				return b;
-			} catch (Exception e) {
-				
-			}
-//		}
+		try {
+			Block b = getBlockIncluding(MCTPO.mouse.x, MCTPO.mouse.y);
+			return b;
+		} catch (Exception e) {
+			
+		}
 		return null;
 	}
 	
@@ -230,11 +191,11 @@ public class Character extends Rectangle2D.Double implements Mobile{
 		return 	(new Point((int)(this.x+width/2), (int)(this.y+height/2))).distance(new Point((int)block.getCenterX(), (int)block.getCenterY()))<=buildRange*MCTPO.blockSize;
 	}
 	
-	public void build(){
+	public void build(long d){
 		if(isBlockInBuildRange(currentBlock)){
 			Material m = currentBlock.material;
 			if(MCTPO.mouseLeftDown){
-				if(destroyTime>=m.hardness&&!(m.hardness<0)){
+				if(destroyTime/d>=m.hardness&&!(m.hardness<0)){
 					if(inv.containsMaterial(m)){
 						boolean check = false;
 						Slot[] slots = inv.getSlotsContaining(m);
@@ -302,7 +263,7 @@ public class Character extends Rectangle2D.Double implements Mobile{
 
 	@Override
 	public void move(int dx, int dy) {
-		if(CollisionDetector.isColliding(new BB(new Rectangle2D.Double(this.x+dx, this.y+dy, this.width, this.height)))){
+		if(Utils.isColliding(new BB(new Rectangle2D.Double(this.x+dx, this.y+dy, this.width, this.height)))){
 			return;
 		}
 		this.y += dy;
@@ -313,7 +274,7 @@ public class Character extends Rectangle2D.Double implements Mobile{
 
 	@Override
 	public void move(double dx, double dy) {
-		if(CollisionDetector.isColliding(new BB(new Rectangle2D.Double(this.x+dx, this.y+dy, this.width, this.height)))){
+		if(Utils.isColliding(new BB(new Rectangle2D.Double(this.x+dx, this.y+dy, this.width, this.height)))){
 			return;
 		}else{
 			this.y += dy;
@@ -329,108 +290,6 @@ public class Character extends Rectangle2D.Double implements Mobile{
 			return false;
 		return this.intersects(otherC.getBounds());
 	}
-	
-	public Rectangle2D getCollisionIntersection(Collideable otherC) {
-		if(otherC instanceof Block&&((Block)otherC).material.nonSolid)
-			return null;
-		return this.createIntersection(otherC.getBounds());
-	}
-
-	public Set<Side> getCollisionSides(Set<Collideable> otherCs) {
-		Set<Side> sides = new HashSet<Side>();
-		Rectangle union = new Rectangle(-1, -1);
-		Rectangle myself = CollisionDetector.toRectangle(this.getBounds());
-		Rectangle last = null;
-		for(Collideable c:otherCs){
-			if(last == null){
-				last = (Rectangle) myself.createIntersection(CollisionDetector.toRectangle(c.getBounds()));
-			}
-			Rectangle.union(last, myself.createIntersection(CollisionDetector.toRectangle(c.getBounds())), union);
-			last = union;
-		}
-		this.union = union;
-		System.out.println(union);
-		System.out.println(myself);
-//		if(union.equals(myself)){
-//			for(Side s:Side.values()){
-//				if(!s.equals(Side.UNKNOWN))
-//					sides.add(s);
-//			}
-//		}else{
-		
-		if(union.getMaxX()==myself.getMaxX()){
-			sides.add(Side.RIGHT);
-		}
-		if(union.getMinX()==myself.getMinX()){
-			sides.add(Side.LEFT);
-		}
-		if(union.getMaxY()==myself.getMaxY()){
-			sides.add(Side.BOTTOM);
-		}
-		if(union.getMinY()==myself.getMinY()){
-			sides.add(Side.TOP);
-		}
-//			if(union.getMaxX()==myself.getMaxX()&&union.width<2){
-//				sides.add(Side.RIGHT);
-//			}
-//			if(union.getMinX()==myself.getMinX()&&union.width<2){
-//				sides.add(Side.LEFT);
-//			}
-//			if(union.getMaxY()==myself.getMaxY()&&(!(sides.contains(Side.LEFT)||sides.contains(Side.RIGHT))&&union.height>2)){
-//				sides.add(Side.BOTTOM);
-//			}
-//			if(union.getMinY()==myself.getMinY()&&((!sides.contains(Side.LEFT)||!sides.contains(Side.RIGHT))&&!(union.height>2))){
-//				sides.add(Side.TOP);
-//			}
-//		}
-		
-		
-//		for(Collideable c:otherCs){
-//			
-//			Rectangle inter = CollisionDetector.toRectangle(getCollisionIntersection(c));
-//			if(inter.getMinY()==myself.getMinY()&&!(inter.getHeight()>2)){
-//					sides.add(Side.TOP);
-//			}
-//			if(inter.getMaxY()==myself.getMaxY()&&!(inter.getHeight()>2)){
-//				sides.add(Side.BOTTOM);
-//			}
-//			if(inter.getMaxX()==myself.getMaxX()&&!(inter.width==inter.height)&&!(inter.getWidth()>2)){
-//				sides.add(Side.RIGHT);
-//			}
-//			if(inter.getMinX()==myself.getMinX()&&!(inter.getWidth()>2)){
-//				sides.add(Side.LEFT);
-//			}
-//		}
-//		if(other.contains((int)(this.x+2), (int)(this.y+this.height))&&other.contains(((int)this.x+this.width-2), (int)(this.y+this.height)))
-//			sides.add(Side.BOTTOM);
-//		if(other.contains(this.x, this.y)&&other.contains(this.x+this.width, this.y))
-//			sides.add(Side.TOP);
-//		if(other.contains(this.x+this.width, this.y)&&other.contains(this.x+this.width, this.y+this.height))
-//			sides.add(Side.RIGHT);
-//		if(other.contains(this.x, this.y)&&other.contains(this.x, this.y+this.height))
-//			sides.add(Side.LEFT);
-//		if(other.contains(bounds[Side.BOTTOM.getId()].getP1())&&other.contains(bounds[Side.BOTTOM.getId()].getP2()))
-//			sides.add(Side.BOTTOM);
-//		if(other.contains(bounds[Side.TOP.getId()].getP1())&&other.contains(bounds[Side.TOP.getId()].getP2()))
-//			sides.add(Side.TOP);
-//		if(other.contains(bounds[Side.RIGHT.getId()].getP1())&&other.contains(bounds[Side.RIGHT.getId()].getP2()))
-//			sides.add(Side.RIGHT);
-//		if(other.contains(bounds[Side.LEFT.getId()].getP1())&&other.contains(bounds[Side.LEFT.getId()].getP2()))
-//			sides.add(Side.LEFT);
-//		int ox=other.x, oy = other.y, owidth=other.width, oheight=other.height;
-//		int x=(int) this.x-2, y=(int) this.y-2, width=(int) this.width+2, height=(int) this.height+2;
-//		if(y+height>=other.y&&!(y>=other.y+other.height)&&other.x<=x+width&&other.x+other.width>=x)
-//			sides.add(Side.BOTTOM);
-//		if(y>=other.y+other.height&&!(y+height>=other.y)&&other.x<=x+width&&other.x+other.width>=x)
-//			sides.add(Side.TOP);
-//		if(x+width<=other.x&&!(x<=other.x+other.width)&&other.y<=y+height&&other.y+other.height>=y)
-//			sides.add(Side.RIGHT);
-//		if(x<=other.x+other.width&&!(x+width<=other.x)&&other.y<=y+height&&other.y+other.height>=y)
-//			sides.add(Side.LEFT);
-//		if(sides.isEmpty())
-//			sides.add(Side.UNKNOWN);
-		return sides;
-	}
 
 	@Override
 	public Rectangle getBounds() {
@@ -438,16 +297,8 @@ public class Character extends Rectangle2D.Double implements Mobile{
 	}
 
 	@Override
-	public void onCollide(Collideable c) 
-	{
+	public void onCollide(Collideable c) {
 		collisionWith.add(c);
 	}
-//
-//	private void setBounds(Double l) {
-//		this.width=l.width;
-//		this.height=l.height;
-//		this.x = l.x;
-//		this.y= l.y;
-//	}
 }
 

@@ -72,7 +72,7 @@ public class MCTPO extends Applet implements Runnable{
 		this.addMouseMotionListener(ml);
 		this.addMouseWheelListener(ml);
 		this.addKeyListener(new KeyListening(character));
-//		collisionDetective.add(character);
+		collisionDetective.add(character);
 		isRunning = true;
 		new Thread(this).start();
 	}
@@ -130,7 +130,7 @@ public class MCTPO extends Applet implements Runnable{
 		screen = createVolatileImage(pixel.width, pixel.height);
 		while(isRunning){
 			calcTime();
-//			collisionDetective.checkCollisions();
+			collisionDetective.checkCollisions();
 			tick(delta); //in milliseconds
 			render();
 			last = thisTime;
@@ -143,8 +143,8 @@ public class MCTPO extends Applet implements Runnable{
 	private void calcTime(){
 		thisTime = System.currentTimeMillis();
 		delta = thisTime - last;
-		fps = frames;
 		if(thisTime - fpsCounterTime > 1000){
+			fps = frames;
 			frames = 0;
 			fpsCounterTime = System.currentTimeMillis();
 		}

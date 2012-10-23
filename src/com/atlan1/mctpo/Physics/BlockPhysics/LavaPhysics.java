@@ -9,7 +9,7 @@ public class LavaPhysics implements BlockPhysics {
 	private AbstractBlockPhysics c;
 	
 	public LavaPhysics() {
-		abs = new FlowPhysics(30, false);
+		abs = new FlowPhysics(1000, false);
 		c = new DamageCollision(10, 30);
 	}
 

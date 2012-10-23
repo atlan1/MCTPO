@@ -17,9 +17,9 @@ import com.atlan1.mctpo.Texture.TextureLoader;
 public enum Material {
 	MASK(-2, true, -1),
 	AIR(-1, true, -1),
-	DIRT(0, false, 20), //20
+	DIRT(0, false, 1), //20
 	GRASS(1, false, 20),
-	STONE(2, false, 35),//35
+	STONE(2, false, 1),//35
 	SAND(3, false, 20),
 	WOOD(4, false, 25),
 	LEAVES(5, false, 10),

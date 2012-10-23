@@ -14,7 +14,7 @@ public class BB extends Rectangle2D.Double implements Collideable {
 	
 	@Override
 	public Rectangle getBounds() {
-		return new Rectangle(CollisionDetector.toRectangle(this));
+		return new Rectangle(Utils.toRectangle(this));
 	}
 
 	@Override
